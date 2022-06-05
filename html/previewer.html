@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
+
+    <title>Previwer res.json data</title>
+  </head>
+  <body>
+    <div id="plotter" style="width: 1300px; height: 600px"></div>
+
+    <script>
+      const plotter = document.getElementById("plotter");
+
+      fetch("/data")
+        .then((res) => res.json())
+        .then((data) => {
+          Plotly.newPlot(
+            plotter,
+            [
+              //   {
+              //     x: data.map((d) => d.simTime),
+              //     y: data.map((d) => d.altitude),
+              //     // z: data.map((d) => d.altitude),
+              //     name: "Altitude",
+              //     // type: "surface",
+              //   },
+              {
+                x: data.map((d) => d.simTime),
+                y: data.map((d) => d.velocity),
+                // z: data.map((d) => d.velocity),
+                name: "Velocity",
+                // type: "surface",
+              },
+              //   {
+              //     x: data.map((d) => d.simTime),
+              //     y: data.map((d) => d.rotation.x),
+              //     name: "Rotation X",
+              //   },
+              //   {
+              //     x: data.map((d) => d.simTime),
+              //     y: data.map((d) => d.rotation.y),
+              //     name: "Rotation Y",
+              //   },
+              //   {
+              //     x: data.map((d) => d.simTime),
+              //     y: data.map((d) => d.rotation.z),
+              //     name: "Rotation Z",
+              //   },
+            ],
+            {
+              margin: { t: 0 },
+            }
+          );
+        });
+    </script>
+  </body>
+</html>

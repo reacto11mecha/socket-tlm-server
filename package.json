@@ -1,0 +1,14 @@
+{
+  "name": "socket-tlm-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "previewer": "node previewer.js"
+  },
+  "author": "Ezra Khairan Permana",
+  "dependencies": {
+    "express": "^4.18.1",
+    "socket.io": "^4.5.1"
+  }
+}
