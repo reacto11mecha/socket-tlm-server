@@ -1,32 +1,40 @@
+const uWSjs = require("uWebSockets.js");
+const path = require("path");
 const fs = require("fs");
-const { Server } = require("socket.io");
+const app = uWSjs.App();
 
 const shared = require("./shared");
 
-const io = new Server({
-  cors: {
-    origin: "http://localhost:5000",
+app.ws("/telemetry", {
+  idleTimeout: 60,
+  maxPayloadLength: 612,
+  compression: uWSjs.DEDICATED_COMPRESSOR_8KB,
+  message: (_ws, message) => {
+    fs.appendFileSync(
+      shared.resultTxt,
+      `${Buffer.from(message).toString("utf8")}\n`
+    );
   },
 });
 
-io.on("connection", (socket) => {
-  socket.on("tlm", (data) =>
-    fs.appendFileSync(shared.resultTxt, `${JSON.stringify(data)}\n`)
-  );
+app.get("/", (res) =>
+  res
+    .writeStatus("200 OK")
+    .writeHeader("Content-Type", "text/html")
+    .end(
+      fs.readFileSync(path.join(shared.htmlDir, "./previewer.html"), "utf-8")
+    )
+);
+
+app.get("/data", (res) => {
+  shared.parseTlm();
+
+  res
+    .writeStatus("200 OK")
+    .writeHeader("Content-Type", "application/json")
+    .end(fs.readFileSync(shared.resultJson, "utf-8"));
 });
 
-io.listen(3000);
-console.log("Listening on port 3000");
-
-const parseTlm = () => {
-  const text = fs.readFileSync(shared.resultTxt, "utf8").trim();
-  const data = text
-    .split("\n")
-    .filter((e) => e !== "")
-    .map(JSON.parse);
-
-  fs.writeFileSync(shared.resultJson, JSON.stringify(data));
-};
-
-process.on("SIGINT", parseTlm);
-process.on("disconnect", parseTlm);
+app.listen(3000, (listenSocket) => {
+  if (listenSocket) console.log("Listening on port 3000");
+});

@@ -9,8 +9,19 @@ const resultJson = path.join(resultDir, "result.json");
 
 if (!fs.existsSync(resultDir)) fs.mkdirSync(resultDir);
 
+const parseTlm = () => {
+  const text = fs.readFileSync(resultTxt, "utf8").trim();
+  const data = text
+    .split("\n")
+    .filter((e) => e !== "")
+    .map(JSON.parse);
+
+  fs.writeFileSync(resultJson, JSON.stringify(data));
+};
+
 module.exports = {
   htmlDir,
   resultTxt,
   resultJson,
+  parseTlm,
 };
